@@ -1,0 +1,94 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tufte-css-latex}[2023-06-21 package tufte-css-latex]
+
+% Turn off section numbering
+\setcounter{secnumdepth}{-1}
+
+% fancyhdrs and page numbers
+\RequirePackage{fancyhdr}
+\pagestyle{empty}
+
+% maketitle
+\RenewDocumentCommand{\maketitle}{}{
+\clearpage % require user to do floats with [hbp] to not be on page 1
+\begingroup
+\setlength{\parindent}{0pt}%
+\setlength{\parskip}{4pt}%
+\LARGE\itshape\@title\par
+\Large\itshape\@author\par
+%\Large\itshape\@date\par
+\endgroup
+\vspace{1.0\baselineskip plus 0.5ex minus 0.2ex}
+\@afterindentfalse\@afterheading% suppress indentation of the next paragraph
+}
+
+% hyperrefs
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage[normalem]{ulem}
+\NewCommandCopy{\@tuftecss@oldhref}{\href}
+\RenewDocumentCommand{\href}{mm}{\@tuftecss@oldhref{#1}{\uline{#2}}}
+
+
+
+
+% code
+\RequirePackage{minted}
+% \mintinline should map to <code></code> tags. 
+% minted environment should also map to <code></code> tags. 
+
+
+
+
+% blockquote
+\NewDocumentEnvironment{blockquote}{}
+{\begin{quote}}
+{\end{quote}}
+\NewDocumentCommand{\blockquotefooter}{m}{\raggedleft\footnotesize #1}
+% these should map to blockquote and its footer
+
+% newthought
+\NewDocumentCommand{\newthought}{m}{\vspace{1em}\noindent\textsc{#1}}
+% \newthought should map to <newthought> 
+
+% epigraphs get mapped a special way
+\NewDocumentEnvironment{epigraphs}{}
+{}
+{}
+
+% these look like block quotes with a footer and special em formatting
+\NewDocumentCommand{\epigraph}{mm}{
+\begin{blockquote}
+\emph{#1}
+
+\blockquotefooter{#2}
+\end{blockquote}
+} %\epigraph
+
+
+
+
+% sidenotes and marginnotes
+\RequirePackage{sidenotes}
+% will have to wrap \sidenote and \marginnote
+\NewCommandCopy{\@tuftecss@oldsidenote}{\sidenote}
+\RenewDocumentCommand{\sidenote}{m}{\@tuftecss@oldsidenote{\footnotesize #1}}
+\NewCommandCopy{\@tuftecss@oldmarginnote}{\marginnote}
+\RenewDocumentCommand{\marginnote}{m}{\@tuftecss@oldmarginnote{\footnotesize #1}}
+
+
+% figures (actually images these are NOT done as Latex floats!)
+\RequirePackage{graphicx}
+\NewDocumentCommand{\tuftecssFigure}{m +o +o}{
+\IfValueTF{#2}{\marginnote{#2}}{}
+\par\noindent\includegraphics[width=0.5\columnwidth]{#1}
+}
+
+\NewDocumentCommand{\tuftecssFullwidthFigure}{m +o +o}{
+\IfValueTF{#2}{\marginnote{#2}}{}
+\par\noindent\includegraphics[width=\columnwidth]{#1}
+}
+
+\RequirePackage{verbatim}
+\NewDocumentEnvironment{tuftecssIframeWrapper}{}
+{\par\noindent \mintinline{html}{iframe-wrapper} to be added around:\verbatim}
+{\endverbatim}
